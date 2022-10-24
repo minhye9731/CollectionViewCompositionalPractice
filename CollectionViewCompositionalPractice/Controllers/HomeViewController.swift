@@ -6,39 +6,25 @@
 //
 
 import UIKit
-
-struct SettingList: Hashable {
-    let id = UUID().uuidString
-    let title: String
-    let subTitle: String
-}
+import SnapKit
 
 class HomeViewController: BaseViewController {
     
-    lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-        return collectionView
-    }()
-    
-    // 삭제예정
-    var contents = [
-        SettingList(title: "문의하기", subTitle: ""),
-        SettingList(title: "리뷰쓰기", subTitle: ""),
-        SettingList(title: "오픈소스 라이선스", subTitle: ""),
-        SettingList(title: "버전", subTitle: "x.x.x")
-    ]
-    
-    private var dataSource: UICollectionViewDiffableDataSource<Int, SettingList>!
-    
-    override func loadView() {
-        collectionView.collectionViewLayout = createLayout()
+    enum Section {
+        case main
     }
     
+    var collectionView: UICollectionView! = nil
+    
+    var viewModel = UnsplashViewModel()
+    private var dataSource: UICollectionViewDiffableDataSource<Section, RandomPhoto>!// = nil
     
     override func configure() {
-        view.backgroundColor = .lightGray
         setNav()
+        configureHierarchy()
         configureDataSource()
+        
+        viewModel.requestRandomPhoto()
     }
     
     override func setConstraints() {
@@ -47,48 +33,91 @@ class HomeViewController: BaseViewController {
         }
     }
     
+    func bindData() {
+        viewModel.randomPhotoList.bind { randomPhoto in
+            var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
+            snapshot.appendSections([Section.main]) // 첫 번째 section이라는 말
+//            snapshot.appendItems(randomPhoto.) // 통신해서 받는 radomImage의
+            self.dataSource.apply(snapshot, animatingDifferences: false)
+        }
+    }
+    
+    
     
 }
+
+// MARK: - two column 형태 잡기
+extension HomeViewController {
+    
+    private func createLayout() -> UICollectionViewLayout {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                              heightDimension: .fractionalHeight(1.0))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                               heightDimension: .absolute(160))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
+        let spacing = CGFloat(10)
+        group.interItemSpacing = .fixed(spacing)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = spacing
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
+    
+}
+
+
 
 // MARK: - compositional layout
 extension HomeViewController {
     
-    private func createLayout() -> UICollectionViewLayout {
-        let config = UICollectionLayoutListConfiguration(appearance: .plain)
-        let layout = UICollectionViewCompositionalLayout.list(using: config)
-        return layout
+    func configureHierarchy() {
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        collectionView.backgroundColor = .systemBackground
+        view.addSubview(collectionView)
     }
     
-    private func configureDataSource() {
+    func configureDataSource() {
         
-        let cellRegisteration = UICollectionView.CellRegistration<UICollectionViewListCell, SettingList> { cell, indexPath, itemIdentifier in
+        let cellRegistration = UICollectionView.CellRegistration<ImageViewCell, RandomPhoto> { cell, indexPath, itemIdentifier in
             
-            var content = UIListContentConfiguration.valueCell()
-            content.text = itemIdentifier.title
-            content.secondaryText = itemIdentifier.subTitle
-            content.textProperties.color = .black
-            cell.contentConfiguration = content
+            cell.likesCountLabel.text = "좋아요 수 : \(itemIdentifier.likes)"
             
-            var background = UIBackgroundConfiguration.listPlainCell()
-            background.backgroundColor = .white
-            cell.backgroundConfiguration = background
-            
+            DispatchQueue.global().async {
+                let url = URL(string: itemIdentifier.urls.thumb)!
+                let data = try? Data(contentsOf: url)
+                
+                DispatchQueue.main.async {
+                    cell.RandomImageView.image = UIImage(data: data!)
+                }
+            }
         }
         
+//        dataSource = UICollectionViewDiffableDataSource<Section, Int>(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
+//
+//            let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: identifier)
+//
+//            return cell
+//        }
+        
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-            
-            let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegisteration, for: indexPath, item: itemIdentifier)
+            let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
             return cell
         })
         
-        var snapshot = NSDiffableDataSourceSnapshot<Int, SettingList>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(contents)
-        dataSource.apply(snapshot)
+        
+        
+//        var snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
+//        snapshot.appendSections([.main])
+//        snapshot.appendItems(Array(0..<94))
+//        dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
-
-
 
 
 
