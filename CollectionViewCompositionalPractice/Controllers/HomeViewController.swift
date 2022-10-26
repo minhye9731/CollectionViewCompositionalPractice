@@ -7,24 +7,28 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class HomeViewController: BaseViewController {
     
     enum Section {
         case main
     }
-    
-    var collectionView: UICollectionView! = nil
-    
+
     var viewModel = UnsplashViewModel()
-    private var dataSource: UICollectionViewDiffableDataSource<Section, RandomPhoto>!// = nil
+    let disposeBag = DisposeBag()
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, RandomPhoto>!
+    var collectionView: UICollectionView! = nil
     
     override func configure() {
         setNav()
         configureHierarchy()
         configureDataSource()
         
-        viewModel.requestRandomPhoto()
+//        viewModel.requestRandomPhotoPublishSubject()
+        bindData()
     }
     
     override func setConstraints() {
@@ -34,15 +38,37 @@ class HomeViewController: BaseViewController {
     }
     
     func bindData() {
-        viewModel.randomPhotoList.bind { randomPhoto in
-            var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
-            snapshot.appendSections([Section.main]) // 첫 번째 section이라는 말
-//            snapshot.appendItems(randomPhoto.) // 통신해서 받는 radomImage의
-            self.dataSource.apply(snapshot, animatingDifferences: false)
-        }
+        
+//        viewModel.randomPhotoList.bind { randomPhoto in
+//            var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
+//            snapshot.appendSections([Section.main]) // 첫 번째 section이라는 말
+////            snapshot.appendItems(randomPhoto.) // 통신해서 받는 radomImage의
+//            self.dataSource.apply(snapshot, animatingDifferences: false)
+//        }
+        
+        // 수정 후
+        
+        
+        
+        // 통신해서 받은 데이터를 이제 뷰에 넣어줌
+        viewModel.randomPhotoListBehaviorRelay // 함수가 아닌 BehaviorRelay 변수 데이터를 넣어줌
+            .withUnretained(self)
+            .bind { (vc, randomPhoto) in
+                var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
+                snapshot.appendSections([.main]) // 첫 번째 section이라는 말
+                snapshot.appendItems(randomPhoto)
+                vc.dataSource.apply(snapshot)
+            }
+            .disposed(by: disposeBag) // relay는 수동으로 dispose 해주어야 함.
+        
+        // 데이터를 통신시키는 거는 (별도 버튼이 없으니까) 바로 실행해줌
+        viewModel.requestRandomPhotoBehaviorRelay() // 이게 왜!! 실행이 안될까!!
+        
+        // (현재) 실행결과 : behavior이라서 넣어준 초기값 이미지만 보이고, 통신한 결과는 안보임..
     }
     
     
+   
     
 }
 
@@ -86,36 +112,28 @@ extension HomeViewController {
         
         let cellRegistration = UICollectionView.CellRegistration<ImageViewCell, RandomPhoto> { cell, indexPath, itemIdentifier in
             
-            cell.likesCountLabel.text = "좋아요 수 : \(itemIdentifier.likes)"
+            cell.backgroundColor = .orange
+//            cell.likesCountLabel.text = "좋아요 수 : 100"
             
-            DispatchQueue.global().async {
-                let url = URL(string: itemIdentifier.urls.thumb)!
-                let data = try? Data(contentsOf: url)
-                
-                DispatchQueue.main.async {
-                    cell.RandomImageView.image = UIImage(data: data!)
-                }
-            }
+            cell.setData(data: itemIdentifier)
+            
+//            cell.likesCountLabel.text = "좋아요 수 : \(itemIdentifier.likes)"
+//
+//            DispatchQueue.global().async {
+//                let url = URL(string: itemIdentifier.urls.thumb)!
+//                let data = try? Data(contentsOf: url)
+//
+//                DispatchQueue.main.async {
+//                    cell.RandomImageView.image = UIImage(data: data!)
+//                }
+//            }
         }
         
-//        dataSource = UICollectionViewDiffableDataSource<Section, Int>(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
-//
-//            let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: identifier)
-//
-//            return cell
-//        }
-        
-        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+        dataSource = UICollectionViewDiffableDataSource<Section, RandomPhoto>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
             return cell
         })
         
-        
-        
-//        var snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
-//        snapshot.appendSections([.main])
-//        snapshot.appendItems(Array(0..<94))
-//        dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
 

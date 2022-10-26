@@ -12,41 +12,21 @@ class APIService {
     
     private init() { }
     
-    static func randomPhoto(completion: @escaping(NetworkResult<Any>) -> ()) {
+    // 수정 후
+    static func randomPhoto(completion: @escaping ([RandomPhoto]?, Int?, Error?) -> Void) { // 여기서 내보낼 때 타입주의! [RandomPhoto]
         
         let url = "\(APIKey.randomURL)"
         let header: HTTPHeaders = ["Authorization": APIKey.authorization]
         
-        AF.request(url, method: .get, headers: header).validate(statusCode: 200..<500).responseData { response in
+        AF.request(url, method: .get, headers: header).responseDecodable(of: [RandomPhoto].self) { response in // 여기서 내보낼 때 타입주의! [RandomPhoto]
+            
+            let statusCode = response.response?.statusCode
+            
             switch response.result {
-            case .success:
-                
-                guard let statusCode = response.response?.statusCode else { return }
-                guard let value = response.value else { return }
-                let networkResult = self.judgeStatus(by: statusCode, value)
-                
-                completion(networkResult)
-                
-            case .failure:
-                completion(.pathErr)
+            case .success(let value): completion(value, statusCode, nil)
+            case .failure(let error): completion(nil, statusCode, error)
             }
         }
-    }
-    
-    private func judgeStatus(by statusCode: Int, _ data: Data) -> NetworkResult<Any> {
-        switch statusCode {
-        case 200: return isValidData(data: data)
-        case 400: return .pathErr
-        case 500: return .serverErr
-        default: return .networkFail
-        }
-    }
-        
-    private func isValidData(data: Data) -> NetworkResult<Any> {
-        
-        let decoder = JSONDecoder()
-        guard let decodedData = try? decoder.decode(RandomPhoto.self, from: data) else { return .pathErr }
-        return .success(decodedData.urls.thumb)
     }
     
 

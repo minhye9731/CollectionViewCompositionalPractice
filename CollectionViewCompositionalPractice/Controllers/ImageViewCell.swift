@@ -9,6 +9,7 @@ import UIKit
 
 class ImageViewCell: BaseCollectionViewCell {
     
+    // MARK: - UI 요소
     let likesCountLabel: UILabel = {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 12)
@@ -23,7 +24,7 @@ class ImageViewCell: BaseCollectionViewCell {
         return imageview
     }()
     
-    
+    // MARK: - UI 메서드
     override func configure() {
         [RandomImageView, likesCountLabel].forEach {
             contentView.addSubview($0)
@@ -43,4 +44,23 @@ class ImageViewCell: BaseCollectionViewCell {
             make.bottom.equalTo(self.safeAreaLayoutGuide).offset(-12)
         }
     }
+    
+    func setData(data: RandomPhoto) {
+        
+        self.likesCountLabel.text = "좋아요 수 : \(data.likes)"
+        
+        DispatchQueue.global().async {
+            let url = URL(string: data.urls.thumb)!
+            let data = try? Data(contentsOf: url)
+            
+            DispatchQueue.main.async {
+                self.RandomImageView.image = UIImage(data: data!)
+            }
+        }
+        
+        
+        
+    }
+    
+    
 }

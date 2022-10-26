@@ -19,14 +19,15 @@
 		0E4F70272906AF32007C6594 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F70262906AF32007C6594 /* BaseViewController.swift */; };
 		0E4F70312906AF91007C6594 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F70302906AF91007C6594 /* HomeViewController.swift */; };
 		0E4F70372906B44A007C6594 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0E4F70362906B44A007C6594 /* SnapKit */; };
-		0E4F70392906B639007C6594 /* CObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F70382906B639007C6594 /* CObservable.swift */; };
 		0E4F703B2906B671007C6594 /* UnsplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F703A2906B671007C6594 /* UnsplashViewModel.swift */; };
 		0E4F7042290702C2007C6594 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0E4F7041290702C2007C6594 /* Kingfisher */; };
 		0E4F704429070742007C6594 /* RandomPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F704329070742007C6594 /* RandomPhoto.swift */; };
 		0E4F704629071780007C6594 /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F704529071780007C6594 /* BaseCollectionViewCell.swift */; };
 		0E4F704829071828007C6594 /* ReusableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F704729071828007C6594 /* ReusableProtocol.swift */; };
 		0E4F704C29071A56007C6594 /* ImageViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F704B29071A56007C6594 /* ImageViewCell.swift */; };
-		0E4F704F290729A6007C6594 /* NetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F704E290729A6007C6594 /* NetworkResult.swift */; };
+		0E7A942F2909AD5E00D094D4 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 0E7A942E2909AD5E00D094D4 /* RxCocoa */; };
+		0E7A94312909AD5E00D094D4 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 0E7A94302909AD5E00D094D4 /* RxRelay */; };
+		0E7A94332909AD5E00D094D4 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0E7A94322909AD5E00D094D4 /* RxSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,13 +43,11 @@
 		0E4F70242906AE64007C6594 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		0E4F70262906AF32007C6594 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		0E4F70302906AF91007C6594 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
-		0E4F70382906B639007C6594 /* CObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CObservable.swift; sourceTree = "<group>"; };
 		0E4F703A2906B671007C6594 /* UnsplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashViewModel.swift; sourceTree = "<group>"; };
 		0E4F704329070742007C6594 /* RandomPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomPhoto.swift; sourceTree = "<group>"; };
 		0E4F704529071780007C6594 /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		0E4F704729071828007C6594 /* ReusableProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableProtocol.swift; sourceTree = "<group>"; };
 		0E4F704B29071A56007C6594 /* ImageViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewCell.swift; sourceTree = "<group>"; };
-		0E4F704E290729A6007C6594 /* NetworkResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,8 +55,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E7A94332909AD5E00D094D4 /* RxSwift in Frameworks */,
+				0E7A94312909AD5E00D094D4 /* RxRelay in Frameworks */,
 				0E4F7042290702C2007C6594 /* Kingfisher in Frameworks */,
 				0E4F701E2906ACEB007C6594 /* Alamofire in Frameworks */,
+				0E7A942F2909AD5E00D094D4 /* RxCocoa in Frameworks */,
 				0E4F70372906B44A007C6594 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -92,8 +94,8 @@
 				0E4F70162906AA6D007C6594 /* Info.plist */,
 				0E4F70112906AA6D007C6594 /* Assets.xcassets */,
 				0E4F70212906AD6A007C6594 /* Key */,
-				0E4F704D29072999007C6594 /* Network */,
 				0E4F702F2906AF74007C6594 /* Utiliy */,
+				0E4F704D29072999007C6594 /* Network */,
 				0E4F703D2906BE86007C6594 /* ViewModels */,
 				0E4F703C2906BE6A007C6594 /* Models */,
 				0E4F703F2906C047007C6594 /* Controllers */,
@@ -114,7 +116,6 @@
 			children = (
 				0E4F704729071828007C6594 /* ReusableProtocol.swift */,
 				0E4F704A29071A3F007C6594 /* BaseView */,
-				0E4F704929071A27007C6594 /* CustomView */,
 			);
 			path = Utiliy;
 			sourceTree = "<group>";
@@ -130,7 +131,6 @@
 		0E4F703D2906BE86007C6594 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				0E4F70382906B639007C6594 /* CObservable.swift */,
 				0E4F703A2906B671007C6594 /* UnsplashViewModel.swift */,
 			);
 			path = ViewModels;
@@ -140,16 +140,9 @@
 			isa = PBXGroup;
 			children = (
 				0E4F70302906AF91007C6594 /* HomeViewController.swift */,
-			);
-			path = Controllers;
-			sourceTree = "<group>";
-		};
-		0E4F704929071A27007C6594 /* CustomView */ = {
-			isa = PBXGroup;
-			children = (
 				0E4F704B29071A56007C6594 /* ImageViewCell.swift */,
 			);
-			path = CustomView;
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		0E4F704A29071A3F007C6594 /* BaseView */ = {
@@ -164,7 +157,6 @@
 		0E4F704D29072999007C6594 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				0E4F704E290729A6007C6594 /* NetworkResult.swift */,
 				0E4F70242906AE64007C6594 /* APIService.swift */,
 			);
 			path = Network;
@@ -190,6 +182,9 @@
 				0E4F701D2906ACEB007C6594 /* Alamofire */,
 				0E4F70362906B44A007C6594 /* SnapKit */,
 				0E4F7041290702C2007C6594 /* Kingfisher */,
+				0E7A942E2909AD5E00D094D4 /* RxCocoa */,
+				0E7A94302909AD5E00D094D4 /* RxRelay */,
+				0E7A94322909AD5E00D094D4 /* RxSwift */,
 			);
 			productName = CollectionViewCompositionalPractice;
 			productReference = 0E4F70052906AA6B007C6594 /* CollectionViewCompositionalPractice.app */;
@@ -223,6 +218,7 @@
 				0E4F701C2906ACEB007C6594 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				0E4F70352906B44A007C6594 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				0E4F7040290702C2007C6594 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				0E7A942D2909AD5E00D094D4 /* XCRemoteSwiftPackageReference "RxSwift" */,
 			);
 			productRefGroup = 0E4F70062906AA6B007C6594 /* Products */;
 			projectDirPath = "";
@@ -252,13 +248,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E4F70392906B639007C6594 /* CObservable.swift in Sources */,
 				0E4F704429070742007C6594 /* RandomPhoto.swift in Sources */,
 				0E4F70252906AE64007C6594 /* APIService.swift in Sources */,
 				0E4F70092906AA6B007C6594 /* AppDelegate.swift in Sources */,
 				0E4F704C29071A56007C6594 /* ImageViewCell.swift in Sources */,
 				0E4F703B2906B671007C6594 /* UnsplashViewModel.swift in Sources */,
-				0E4F704F290729A6007C6594 /* NetworkResult.swift in Sources */,
 				0E4F704629071780007C6594 /* BaseCollectionViewCell.swift in Sources */,
 				0E4F704829071828007C6594 /* ReusableProtocol.swift in Sources */,
 				0E4F70312906AF91007C6594 /* HomeViewController.swift in Sources */,
@@ -508,6 +502,14 @@
 				minimumVersion = 7.4.0;
 			};
 		};
+		0E7A942D2909AD5E00D094D4 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -525,6 +527,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0E4F7040290702C2007C6594 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		0E7A942E2909AD5E00D094D4 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E7A942D2909AD5E00D094D4 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		0E7A94302909AD5E00D094D4 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E7A942D2909AD5E00D094D4 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		0E7A94322909AD5E00D094D4 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E7A942D2909AD5E00D094D4 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
