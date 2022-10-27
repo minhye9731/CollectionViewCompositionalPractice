@@ -17,6 +17,7 @@ class HomeViewController: BaseViewController {
     }
 
     var viewModel = UnsplashViewModel()
+    let randomPhotoList = PublishSubject<[RandomPhoto]>()
     let disposeBag = DisposeBag()
     
     private var dataSource: UICollectionViewDiffableDataSource<Section, RandomPhoto>!
@@ -27,7 +28,9 @@ class HomeViewController: BaseViewController {
         configureHierarchy()
         configureDataSource()
         
-//        viewModel.requestRandomPhotoPublishSubject()
+        viewModel.randomPhotoListPublishSubject = randomPhotoList
+        viewModel.requestRandomPhotoPublishSubject()
+        
         bindData()
     }
     
@@ -39,6 +42,16 @@ class HomeViewController: BaseViewController {
     
     func bindData() {
         
+        // 차근차근 해보자.
+        viewModel.randomPhotoListPublishSubject
+            .subscribe { value in
+                print("뷰컨 확인용 - \(value)")
+                print("subscribe 확인용")
+            }
+            .disposed(by: disposeBag)
+        
+        
+        
 //        viewModel.randomPhotoList.bind { randomPhoto in
 //            var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
 //            snapshot.appendSections([Section.main]) // 첫 번째 section이라는 말
@@ -47,22 +60,19 @@ class HomeViewController: BaseViewController {
 //        }
         
         // 수정 후
-        
-        
-        
         // 통신해서 받은 데이터를 이제 뷰에 넣어줌
-        viewModel.randomPhotoListBehaviorRelay // 함수가 아닌 BehaviorRelay 변수 데이터를 넣어줌
-            .withUnretained(self)
-            .bind { (vc, randomPhoto) in
-                var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
-                snapshot.appendSections([.main]) // 첫 번째 section이라는 말
-                snapshot.appendItems(randomPhoto)
-                vc.dataSource.apply(snapshot)
-            }
-            .disposed(by: disposeBag) // relay는 수동으로 dispose 해주어야 함.
-        
-        // 데이터를 통신시키는 거는 (별도 버튼이 없으니까) 바로 실행해줌
-        viewModel.requestRandomPhotoBehaviorRelay() // 이게 왜!! 실행이 안될까!!
+//        viewModel.randomPhotoListBehaviorRelay // 함수가 아닌 BehaviorRelay 변수 데이터를 넣어줌
+//            .withUnretained(self)
+//            .bind { (vc, randomPhoto) in
+//                var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
+//                snapshot.appendSections([.main]) // 첫 번째 section이라는 말
+//                snapshot.appendItems(randomPhoto)
+//                vc.dataSource.apply(snapshot)
+//            }
+//            .disposed(by: disposeBag) // relay는 수동으로 dispose 해주어야 함.
+//
+//        // 데이터를 통신시키는 거는 (별도 버튼이 없으니까) 바로 실행해줌
+//        viewModel.requestRandomPhotoBehaviorRelay() // 이게 왜!! 실행이 안될까!!
         
         // (현재) 실행결과 : behavior이라서 넣어준 초기값 이미지만 보이고, 통신한 결과는 안보임..
     }

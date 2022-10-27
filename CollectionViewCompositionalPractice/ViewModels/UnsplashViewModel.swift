@@ -9,6 +9,8 @@ import Foundation
 
 import RxCocoa
 import RxSwift
+import RxAlamofire
+import Alamofire // HTTPHeaders 때문에 import함
 
 enum SearchError: Error {
     case noPhoto
@@ -16,66 +18,87 @@ enum SearchError: Error {
 }
 
 class UnsplashViewModel {
+    
+    let disposeBag = DisposeBag()
 
-//    var randomPhotoList: CObservable<[RandomPhoto]> = CObservable(RandomPhoto(id: "", urls: Urls(thumb: "https://images.unsplash.com/photo-1664018625610-7538a8367f88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTgyNjF8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NjY2MzMyNDQ&ixlib=rb-4.0.3&q=80&w=200"), likes: 0))
-    
-    // 여기에서 [RandomPhoto] 이렇게 배열로 받는 것에 대한 부분때문에, 뷰컨쪽 타입 맞추느라 에러가 많이 발생했었음
     var randomPhotoListPublishSubject = PublishSubject<[RandomPhoto]>()
-    var randomPhotoListPublishRelay = PublishRelay<[RandomPhoto]>()
-    var randomPhotoListBehaviorRelay = BehaviorRelay<[RandomPhoto]>(value: [RandomPhoto(id: "12345678901", urls: Urls(thumb: "https://images.unsplash.com/photo-1664018625610-7538a8367f88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTgyNjF8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NjY2MzMyNDQ&ixlib=rb-4.0.3&q=80&w=200"), likes: 100)])
     
-//    func requestRandomPhoto() { // 타입때문에 에러남
-//        APIService.randomPhoto { photo, statusCode, error in
-//            guard let randomPhoto = photo else { return }
-//            self.randomPhotoList.value = randomPhoto
+//    func requestRandomPhotoPublishSubject() {
+//        APIService.randomPhoto { [weak self] photolist, statusCode, error in
+//
+//            print("view model 확인용1 - \(photolist?.count)") // nil
+//            print("view model 확인용1 - \(statusCode)")
+//
+//            guard let statusCode = statusCode else {
+//                self?.randomPhotoListPublishSubject.onError(SearchError.serverError)
+//                return
+//            }
+//
+//            guard let photolist = photolist else {
+//                self?.randomPhotoListPublishSubject.onError(SearchError.noPhoto)
+//                return
+//            }
+//
+//            self?.randomPhotoListPublishSubject.onNext(photolist) // 시점변경
 //        }
 //    }
     
+    let url = APIKey.randomURL
+    let header: HTTPHeaders = ["Authorization": APIKey.authorization]
+//    let params: [String: Int] = ["count" : 20]
+    
     func requestRandomPhotoPublishSubject() {
-        APIService.randomPhoto { [weak self] photo, statusCode, error in
-            
-            guard let statusCode = statusCode, statusCode == 200 else {
-                self?.randomPhotoListPublishSubject.onError(SearchError.serverError)
-                return
+        
+        requestJSON(.get, url, headers: header) // parameters: params
+            .map { $1 } // Data로 받음
+            .map { response -> [RandomPhoto] in
+                
+                print(response) // 잘 들어옴
+                
+                let data = try JSONSerialization.data(withJSONObject: response, options: .prettyPrinted)
+                let decodedData = try JSONDecoder().decode(RandomPhoto.self, from: data)
+                
+                return [decodedData.self]
+                
             }
-            
-            guard let photo = photo else {
-                self?.randomPhotoListPublishSubject.onError(SearchError.noPhoto)
-                return
-            }
-            
-            self?.randomPhotoListPublishSubject.onNext(photo)
-        }
+            .subscribe(onNext: { [weak self] data in
+                self?.randomPhotoListPublishSubject.onNext(data)
+            })
+//            .bind(to: randomPhotoListPublishSubject)
+            .disposed(by: disposeBag)
+        
+        
+//            .subscribe(onNext: { [weak self] photolist in
+//                self?.randomPhotoListPublishSubject.onNext(photolist)
+//            })
+
     }
-    
-    func requestRandomPhotoPublishRelay() {
-        APIService.randomPhoto { [weak self] photo, statusCode, error in
-            
-            // relay는 error 이벤트를 못 받으니까 그냥 return만 했음
-            guard let statusCode = statusCode, statusCode == 200 else { return }
-            guard let photo = photo else { return }
-            
-            self?.randomPhotoListPublishRelay.accept(photo)
-            
-        }
-    }
-    
-    func requestRandomPhotoBehaviorRelay() {
-        APIService.randomPhoto { [weak self] photo, statusCode, error in
-            
-            // relay는 error 이벤트를 못 받으니까 그냥 return만 했음
-            guard let statusCode = statusCode, statusCode == 200 else { return }
-            guard let photo = photo else { return }
-            
-            print("photo.count = \(photo.count)")
-            print("statusCode = \(statusCode)")
-            
-            self?.randomPhotoListBehaviorRelay.accept(photo)
-            
-        }
-    }
-    
-    
-    
-    
 }
+    
+//    func requestRandomPhotoPublishRelay() {
+//        APIService.randomPhoto { [weak self] photo, statusCode, error in
+//
+//            // relay는 error 이벤트를 못 받으니까 그냥 return만 했음
+//            guard let statusCode = statusCode, statusCode == 200 else { return }
+//            guard let photo = photo else { return }
+//
+//            self?.randomPhotoListPublishRelay.accept(photo)
+//
+//        }
+//    }
+//
+//    func requestRandomPhotoBehaviorRelay() { // Relay은 통신에 적절하지 않음. 왜냐면 ui 특화라서 error일 경우 처리가 어려움.
+//        APIService.randomPhoto { [weak self] photo, statusCode, error in
+//
+//            // relay는 error 이벤트를 못 받으니까 그냥 return만 했음
+//            guard let statusCode = statusCode, statusCode == 200 else { return }
+//            guard let photo = photo else { return }
+//
+//            print("photo.count = \(photo.count)")
+//            print("statusCode = \(statusCode)")
+//
+//            self?.randomPhotoListBehaviorRelay.accept(photo) // 시점변경
+//
+//        }
+//    }
+

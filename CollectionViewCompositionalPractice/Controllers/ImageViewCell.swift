@@ -50,7 +50,7 @@ class ImageViewCell: BaseCollectionViewCell {
         self.likesCountLabel.text = "좋아요 수 : \(data.likes)"
         
         DispatchQueue.global().async {
-            let url = URL(string: data.urls.thumb)!
+            guard let url = URL(string: data.urls) else { return }
             let data = try? Data(contentsOf: url)
             
             DispatchQueue.main.async {
