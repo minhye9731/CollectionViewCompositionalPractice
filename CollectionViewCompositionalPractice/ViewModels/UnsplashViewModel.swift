@@ -22,7 +22,7 @@ class UnsplashViewModel {
     
     let disposeBag = DisposeBag()
 
-    var randomPhotoListPublishSubject = PublishSubject<[RandomPhoto]>()
+    var randomPhotoListPublishSubject = PublishSubject<[RandomPhotoDTO]>()
     
     //수정 전
 //    func requestRandomPhotoPublishSubject() {
@@ -54,18 +54,18 @@ class UnsplashViewModel {
         requestJSON(.get, url, parameters: params, headers: header)
             .map { $1 } // Data로 받음
             .debug()
-            .map { (response) -> [RandomPhoto] in
+            .map { (response) -> [RandomPhotoDTO] in
                 
                 let json = JSON(response)
                 let data = json.arrayValue
                 
-                let photoArray: [RandomPhoto] = data.map { item -> RandomPhoto in
+                let photoArray: [RandomPhotoDTO] = data.map { item -> RandomPhotoDTO in
                     
                     let id = item["id"].stringValue
                     let url = item["urls"]["thumb"].stringValue
                     let likeCount = item["likes"].intValue
                     
-                    return RandomPhoto(id: id, urls: url, likes: likeCount)
+                    return RandomPhotoDTO(id: id, urls: url, likes: likeCount)
                 }
                 
                 print("배열 첫 번째 값 - \(photoArray[0])")

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RandomPhoto: Codable, Hashable {
+struct RandomPhotoDTO: Codable, Hashable {
     let id: String
     let urls: String
     let likes: Int

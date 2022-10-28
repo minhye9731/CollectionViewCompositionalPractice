@@ -46,7 +46,7 @@ class ImageViewCell: BaseCollectionViewCell {
         }
     }
     
-    func setData(data: RandomPhoto) {
+    func setData(data: RandomPhotoDTO) {
         
         self.likesCountLabel.text = "좋아요 수 : \(data.likes)"
         

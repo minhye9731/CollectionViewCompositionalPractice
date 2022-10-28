@@ -19,7 +19,7 @@ class HomeViewController: BaseViewController {
     var viewModel = UnsplashViewModel()
     let disposeBag = DisposeBag()
     
-    private var dataSource: UICollectionViewDiffableDataSource<Section, RandomPhoto>!
+    private var dataSource: UICollectionViewDiffableDataSource<Section, RandomPhotoDTO>!
     var collectionView: UICollectionView! = nil
     
     override func configure() {
@@ -41,7 +41,7 @@ class HomeViewController: BaseViewController {
         
         viewModel.randomPhotoListPublishSubject
             .subscribe(onNext: { value in
-                var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
+                var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhotoDTO>()
                 snapshot.appendSections([.main])
                 snapshot.appendItems(value)
                 self.dataSource.apply(snapshot)
@@ -122,12 +122,12 @@ extension HomeViewController {
     
     func configureDataSource() {
         
-        let cellRegistration = UICollectionView.CellRegistration<ImageViewCell, RandomPhoto> { cell, indexPath, itemIdentifier in
+        let cellRegistration = UICollectionView.CellRegistration<ImageViewCell, RandomPhotoDTO> { cell, indexPath, itemIdentifier in
             
             cell.setData(data: itemIdentifier)
         }
         
-        dataSource = UICollectionViewDiffableDataSource<Section, RandomPhoto>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+        dataSource = UICollectionViewDiffableDataSource<Section, RandomPhotoDTO>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
             return cell
         })
