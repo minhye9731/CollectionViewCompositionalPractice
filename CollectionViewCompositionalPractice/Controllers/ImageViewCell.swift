@@ -12,8 +12,8 @@ class ImageViewCell: BaseCollectionViewCell {
     // MARK: - UI 요소
     let likesCountLabel: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 12)
-        label.textColor = .lightGray
+        label.font = .boldSystemFont(ofSize: 18)
+        label.textColor = .white
         label.textAlignment = .right
         return label
     }()
@@ -21,6 +21,7 @@ class ImageViewCell: BaseCollectionViewCell {
     let RandomImageView: UIImageView = {
         let imageview = UIImageView()
         imageview.contentMode = .scaleAspectFill
+        imageview.clipsToBounds = true
         return imageview
     }()
     

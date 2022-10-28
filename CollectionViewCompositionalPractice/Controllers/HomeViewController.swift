@@ -17,7 +17,6 @@ class HomeViewController: BaseViewController {
     }
 
     var viewModel = UnsplashViewModel()
-    let randomPhotoList = PublishSubject<[RandomPhoto]>()
     let disposeBag = DisposeBag()
     
     private var dataSource: UICollectionViewDiffableDataSource<Section, RandomPhoto>!
@@ -28,9 +27,7 @@ class HomeViewController: BaseViewController {
         configureHierarchy()
         configureDataSource()
         
-        viewModel.randomPhotoListPublishSubject = randomPhotoList
         viewModel.requestRandomPhotoPublishSubject()
-        
         bindData()
     }
     
@@ -42,12 +39,19 @@ class HomeViewController: BaseViewController {
     
     func bindData() {
         
-        // 차근차근 해보자.
         viewModel.randomPhotoListPublishSubject
-            .subscribe { value in
-                print("뷰컨 확인용 - \(value)")
-                print("subscribe 확인용")
-            }
+            .subscribe(onNext: { value in
+                var snapshot = NSDiffableDataSourceSnapshot<Section, RandomPhoto>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(value)
+                self.dataSource.apply(snapshot)
+            }, onError: { error in
+                print("====error: \(error)")
+            }, onCompleted: {
+                print("completed")
+            }, onDisposed: {
+                print("disposed")
+            })
             .disposed(by: disposeBag)
         
         
@@ -77,8 +81,6 @@ class HomeViewController: BaseViewController {
         // (현재) 실행결과 : behavior이라서 넣어준 초기값 이미지만 보이고, 통신한 결과는 안보임..
     }
     
-    
-   
     
 }
 
@@ -122,21 +124,7 @@ extension HomeViewController {
         
         let cellRegistration = UICollectionView.CellRegistration<ImageViewCell, RandomPhoto> { cell, indexPath, itemIdentifier in
             
-            cell.backgroundColor = .orange
-//            cell.likesCountLabel.text = "좋아요 수 : 100"
-            
             cell.setData(data: itemIdentifier)
-            
-//            cell.likesCountLabel.text = "좋아요 수 : \(itemIdentifier.likes)"
-//
-//            DispatchQueue.global().async {
-//                let url = URL(string: itemIdentifier.urls.thumb)!
-//                let data = try? Data(contentsOf: url)
-//
-//                DispatchQueue.main.async {
-//                    cell.RandomImageView.image = UIImage(data: data!)
-//                }
-//            }
         }
         
         dataSource = UICollectionViewDiffableDataSource<Section, RandomPhoto>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in

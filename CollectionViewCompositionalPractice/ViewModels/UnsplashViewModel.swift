@@ -11,6 +11,7 @@ import RxCocoa
 import RxSwift
 import RxAlamofire
 import Alamofire // HTTPHeaders 때문에 import함
+import SwiftyJSON
 
 enum SearchError: Error {
     case noPhoto
@@ -23,6 +24,7 @@ class UnsplashViewModel {
 
     var randomPhotoListPublishSubject = PublishSubject<[RandomPhoto]>()
     
+    //수정 전
 //    func requestRandomPhotoPublishSubject() {
 //        APIService.randomPhoto { [weak self] photolist, statusCode, error in
 //
@@ -45,29 +47,51 @@ class UnsplashViewModel {
     
     let url = APIKey.randomURL
     let header: HTTPHeaders = ["Authorization": APIKey.authorization]
-//    let params: [String: Int] = ["count" : 20]
+    let params: [String: Int] = ["count" : 20]
     
     func requestRandomPhotoPublishSubject() {
         
-        requestJSON(.get, url, headers: header) // parameters: params
+        requestJSON(.get, url, parameters: params, headers: header)
             .map { $1 } // Data로 받음
-            .map { response -> [RandomPhoto] in
+            .debug()
+            .map { (response) -> [RandomPhoto] in
                 
-                print(response) // 잘 들어옴
+                let json = JSON(response)
+                let data = json.arrayValue
                 
-                let data = try JSONSerialization.data(withJSONObject: response, options: .prettyPrinted)
-                let decodedData = try JSONDecoder().decode(RandomPhoto.self, from: data)
+                let photoArray: [RandomPhoto] = data.map { item -> RandomPhoto in
+                    
+                    let id = item["id"].stringValue
+                    let url = item["urls"]["thumb"].stringValue
+                    let likeCount = item["likes"].intValue
+                    
+                    return RandomPhoto(id: id, urls: url, likes: likeCount)
+                }
                 
-                return [decodedData.self]
+                print("배열 첫 번째 값 - \(photoArray[0])")
                 
+                return photoArray
             }
-            .subscribe(onNext: { [weak self] data in
-                self?.randomPhotoListPublishSubject.onNext(data)
+            .subscribe(onNext: { [weak self] photoList in
+                self?.randomPhotoListPublishSubject.onNext(photoList)
             })
-//            .bind(to: randomPhotoListPublishSubject)
             .disposed(by: disposeBag)
-        
-        
+            
+//
+           
+
+//                let data = try JSONSerialization.data(withJSONObject: response, options: .prettyPrinted)
+//                let decodedData = try JSONDecoder().decode(RandomPhoto.self, from: data)
+//                return [decodedData.self]
+
+//            }
+//            .subscribe(onNext: { [weak self] data in
+//                self?.randomPhotoListPublishSubject.onNext(data)
+//            })
+//            .bind(to: randomPhotoListPublishSubject)
+//            .disposed(by: disposeBag)
+//
+//
 //            .subscribe(onNext: { [weak self] photolist in
 //                self?.randomPhotoListPublishSubject.onNext(photolist)
 //            })
@@ -102,3 +126,18 @@ class UnsplashViewModel {
 //        }
 //    }
 
+
+//
+//    let json = JSON(json)
+//
+//    guard
+//    let id = json["id"].stringValue,
+//    let url = json["urls"]["thumb"].stringValue,
+//    let likeCount = json["likes"].intValue,
+//
+//    let item = RandomPhoto(id: id, urls: url, likes: likeCount)
+//
+//    else {
+//        return RandomPhoto(id: "00000000000", urls: "https://images.unsplash.com/photo-1664855775450-32eb789a084c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNTgyNjF8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NjY5NDM5MDg&ixlib=rb-4.0.3&q=80&w=200", likes: 0)
+//    }
+//    return .just(item)
